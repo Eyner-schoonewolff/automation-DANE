@@ -17,15 +17,19 @@ automation = APIRouter()
 )
 def processing_analysis(
     api_key: str = Depends(validate_api_key),
-    service_: handler.ServiceAutomatication = Depends(get_service),
+    __service: handler.ServiceAutomatication = Depends(get_service),
 ):
     try:
-        automation = service_.process_generate_excel(
+        file_path = __service.process_generate_excel(
             url=os.getenv("URL_PAGE_DANE"),
         )
+
+        print(f"File path: {file_path}")
+        __service.process_excel(file_path)
+
         JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={"message": "Archivo generado con éxito", "file_path": automation},
+            content={"message": "Archivo generado con éxito"},
         )
     except Exception as e:
         return JSONResponse(

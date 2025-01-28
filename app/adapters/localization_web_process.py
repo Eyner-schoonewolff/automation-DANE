@@ -16,7 +16,7 @@ class LocalizationWebProcess(abc.ABC):
         raise NotImplementedError
     
     @abc.abstractmethod
-    def download_file(self, driver) -> None:
+    def download_file(self, driver) -> str:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -41,9 +41,9 @@ class DANEAdapter(LocalizationWebProcess):
         section = driver.find_element(By.XPATH, "//h2[contains(text(), 'Precios de los productos de primera necesidad para los colombianos en tiempos del COVID-19')]")
         driver.execute_script("arguments[0].scrollIntoView();", section)
 
-    def download_file(self, driver) -> None:
+    def download_file(self, driver) -> str:
         # Localiza el enlace al archivo basado en su clase
-        link = driver.find_element(By.CSS_SELECTOR, "a.btn.btn-gray")
+        link = driver.find_element(By.CSS_SELECTOR, "a.btn.btn-gray[title='Anexo referencias mas vendidas']")
         file_url = link.get_attribute('href')  # Obtiene el atributo href del enlace
 
         # Validar si la URL ya incluye el esquema completo
@@ -61,6 +61,8 @@ class DANEAdapter(LocalizationWebProcess):
         file_path = os.path.join(os.getcwd(), 'anexo_referencias_mas_vendidas.xlsx')
         with open(file_path, 'wb') as file:
             file.write(response.content)
+            
+        return "anexo_referencias_mas_vendidas.xlsx"
 
 
     def generate_screenshot(self, driver, file_path: str) -> None:
