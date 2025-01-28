@@ -1,0 +1,5 @@
+fastapi==0.115.7 
+python-dotenv==1.0.1 
+mangum==0.17.0
+requests==2.32.3 
+selenium==4.28.1 
