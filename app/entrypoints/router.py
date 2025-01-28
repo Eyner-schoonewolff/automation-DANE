@@ -27,7 +27,7 @@ def processing_analysis(
         print(f"File path: {file_path}")
         __service.process_excel(file_path)
 
-        JSONResponse(
+        return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={"message": "Archivo generado con éxito"},
         )
