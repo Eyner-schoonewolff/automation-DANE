@@ -1,121 +1,112 @@
 import openpyxl
-import json
 import abc
 import csv
 from typing import List, Dict, Any, Optional
 
-# Definición de la clase base (ExcelProcessFile)
+
 class ExcelProcessFile(abc.ABC):
+    """
+    Clase base para procesar archivos Excel.
+    """
+
     @abc.abstractmethod
-    def read_data(self, file_path: str) -> None:
+    def read_data(self, file_path: str) -> List[Dict[str, Any]]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def extract_relevant_data(self) -> None:
+    def extract_relevant_data(self) -> List[Dict[str, Any]]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def top_10_best_sellers(self) -> str:
+    def generate_csv(self) -> str:
         raise NotImplementedError
     
     @abc.abstractmethod
-    def create_csv(self, top_10_data: List[Dict[str, Any]]) -> None:
+    def create_csv(self, top_10_data: List[Dict[str, Any]]) -> str:
         raise NotImplementedError
 
 
-# Adaptador de la clase ExcelProcessFile
-class AdapterExcel(ExcelProcessFile):
+class ExcelAdapter(ExcelProcessFile):
+    """
+    Implementación de la clase ExcelProcessFile.
+    """
 
     def __init__(self) -> None:
         self.data: Optional[List[Dict[str, Any]]] = None
         self.top_10: Optional[List[Dict[str, Any]]] = None
 
-    def read_data(self, file_path: str) -> None:
+    def read_data(self, file_path: str) -> List[Dict[str, Any]]:
         """
-        Lee los datos del archivo Excel y almacena los datos relevantes.
+        Lee los datos del archivo Excel y los almacena en memoria.
         """
         wb_obj = openpyxl.load_workbook(file_path)
-        sheet_obj = wb_obj[wb_obj.sheetnames[2]]  # Seleccionar la tercera hoja
+        sheet_obj = wb_obj[wb_obj.sheetnames[2]]
 
-        # Crear una lista para almacenar los datos
-        rows_data: List[Dict[str, Any]] = []
+        self.data = [
+            {
+                "producto": sheet_obj.cell(row=row, column=5).value,
+                "marca": sheet_obj.cell(row=row, column=7).value,
+                "cantidad": sheet_obj.cell(row=row, column=8).value,
+                "precio": sheet_obj.cell(row=row, column=11).value,
+            }
+            for row in range(9, 1355)
+            if sheet_obj.cell(row=row, column=8).value is not None
+        ]
+        return self.data
 
-        # Recorrer las filas de la 9 a la 1354
-        for row in range(9, 1354 + 1):
-            producto = sheet_obj.cell(row=row, column=5).value
-            marca = sheet_obj.cell(row=row, column=7).value
-            cantidad = sheet_obj.cell(row=row, column=8).value
-            precio = sheet_obj.cell(row=row, column=11).value
+    def extract_relevant_data(self) -> List[Dict[str, Any]]:
+        """
+        Extrae los 10 productos más vendidos.
+        """
+        if not self.data:
+            raise ValueError("No hay datos cargados para extraer información.")
+        self.top_10 = sorted(self.data, key=lambda x: x["cantidad"], reverse=True)[:10]
+        
+        return self.top_10
 
-            if cantidad is not None:
-                rows_data.append(
-                    {
-                        "producto": producto,
-                        "marca": marca,
-                        "cantidad": cantidad,
-                        "precio": precio,
-                    }
+    def generate_csv(self) -> str:
+        """
+        Genera un archivo JSON y un CSV con los 10 productos más vendidos.
+        """
+        if self.top_10 is None:
+            self.extract_relevant_data()
+
+        __path__ = self.create_csv(self.top_10)
+        
+        return __path__
+
+    def create_csv(self, top_10_data: List[Dict[str, Any]]) -> str:
+        """
+        Crea un archivo CSV basado en los datos de los 10 mejores productos
+        y calcula el total de los precios.
+        """
+
+        csv_file = "downloads/top_10_best_sellers.csv"
+        total_precio = 0  # Inicializamos la suma total de los precios
+
+        with open(csv_file, mode="w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Nombre del Producto", "Marca", "Cantidad", "Precio"])
+
+            for item in top_10_data:
+                try:
+                    # Convertimos el precio a flotante
+                    precio = float(item.get("precio", 0))
+                except (ValueError, TypeError):
+                    precio = 0
+
+                total_precio += precio
+
+                writer.writerow(
+                    [
+                        item.get("producto", "N/A"),
+                        item.get("marca", "N/A"),
+                        item.get("cantidad", 0),
+                        precio,
+                    ]
                 )
 
-        # Almacenar los datos en el atributo self.data
-        self.data = rows_data
-
-    def extract_relevant_data(self) -> None:
-        """
-        Extrae y organiza los 10 mejores productos con más cantidad vendida
-        desde los datos previamente cargados.
-        """
-        if self.data is not None:
-            # Ordenar los datos por 'cantidad' de mayor a menor
-            sorted_data = sorted(self.data, key=lambda x: x["cantidad"], reverse=True)
-            # Obtener los 10 primeros
-            self.top_10 = sorted_data[:10]
-        else:
-            self.top_10 = None
-            raise ValueError("No se ha cargado ninguna data previamente.")
-
-    def top_10_best_sellers(self) -> str:
-        """
-        Función para obtener los 10 mejores productos y devolverlos en formato JSON y CSV.
-        """
-        self.extract_relevant_data()
-
-        if self.top_10:
-            # Convertir los resultados a JSON
-            json_result = json.dumps(self.top_10, indent=4)
-
-            # Crear archivo CSV
-            self.create_csv(self.top_10)
-
-            return json_result
-        else:
-            raise ValueError("No se pudieron obtener los mejores productos.")
-
-    def create_csv(self, top_10_data: List[Dict[str, Any]]) -> None:
-        """
-        Crea un archivo CSV con los 10 productos más vendidos e incluye la sumatoria total.
-        """
-        if not top_10_data:
-            raise ValueError("No hay datos para generar el archivo CSV.")
-        
-        csv_file = "top_10_best_sellers.csv"
-
-        try:
-            total_precio = sum(int(item['precio']) for item in top_10_data if isinstance(item, dict) and 'precio' in item)
+            writer.writerow(["TOTAL", "", "", round(total_precio, 2)])
             
-            with open(csv_file, mode='w', newline='', encoding='utf-8') as file:
-                writer = csv.writer(file)
+            return csv_file
 
-                # Escribir la cabecera
-                writer.writerow(["Nombre del Producto", "Marca", "Cantidad"])
-
-                for item in top_10_data:
-                    if isinstance(item, dict) and 'producto' in item and 'marca' in item and 'cantidad' in item:
-                        writer.writerow([item['producto'], item['marca'], item['cantidad']])
-                    else:
-                        raise ValueError(f"Error en los datos del producto: {item}")
-                
-                writer.writerow(["TOTAL", "", total_precio])
-        
-        except Exception as e:
-            raise ValueError(f"Error al generar el archivo CSV: {e}")
