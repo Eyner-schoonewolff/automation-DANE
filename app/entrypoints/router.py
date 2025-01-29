@@ -17,6 +17,7 @@ automation = APIRouter()
     dependencies=[Depends(validate_api_key), Depends(get_service)],
 )
 def processing_analysis(
+    email: str = Param(..., title="Email", description="Email para enviar el reporte"),
     api_key: str = Depends(validate_api_key),
     __service: handler.ServiceAutomation = Depends(get_service),
 ):
@@ -26,31 +27,9 @@ def processing_analysis(
         )
 
         report_excel = __service.process_excel(file_path)
-
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={"message": "ok", "data": report_excel},
-        )
-    except Exception as e:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"message": str(e)},
-        )
-    except HTTPException as e:
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"message": str(e)},
-        )
+        __service.process_email(report_excel, email)
 
 
-@automation.post("/send_email")
-def send_email(
-    email: str = Param(..., description="Email to send the report"),
-    api_key: str = Depends(validate_api_key),
-    __service: handler.ServiceAutomation = Depends(get_service),
-):
-    try:
-        __service.send_email(email)
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={"message": "ok"},

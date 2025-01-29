@@ -53,11 +53,16 @@ class ServiceAutomation:
 
         # Devolver los resultados en un diccionario
         return {
-            "products": products,
-            "top_10": top_10_total,
-            "percentage": percentage,
-            "path_csv": path_csv,
+            "TOTAL_PRODUCTS": products,
+            "TOP_10_TOTAL": top_10_total,
+            "PERCENTAGE": percentage,
+            "PATH_CSV": path_csv,
         }
 
-    def send_email(self, email: str) -> None:
-        pass
+    def process_email(self, data: dict, email: str) -> None:
+        try:
+            template = self.email.read_html_template("templates", "body")
+            self.email.add_file_email(data["PATH_CSV"])
+            self.email.send_email(template, data, email)
+        except Exception as e:
+            print(f"An error occurred while processing the email: {e}")
