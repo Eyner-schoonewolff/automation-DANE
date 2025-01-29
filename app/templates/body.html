@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <style>
+      @font-face {
+        font-family: "Poppins";
+        font-style: normal;
+        font-weight: 400;
+        mso-font-alt: "sans-serif";
+        src: url(https://fonts.googleapis.com/css2?family=Poppins&display=swap) format("woff2");
+      }
+
+      * {
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        /* Fondo oscuro pero profesional */
+        background-color: #1a1f36;
+        padding: 1rem;
+        margin: 0;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 2rem;
+        /* Contenedor con fondo semi-transparente */
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-logo {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .header-logo img {
+        width: 250px;
+        height: auto;
+        display: inline-block;
+        margin: 0 auto;
+      }
+
+      .greeting {
+        font-size: 1.875rem;
+        line-height: 2.25rem;
+        color: #ffffff;
+        font-weight: 800;
+        margin: 2rem 0;
+      }
+
+      .main-text {
+        font-size: 1rem;
+        line-height: 1.5rem;
+        color: #e2e8f0;
+        font-weight: 400;
+        margin: 2rem 0;
+      }
+
+      .stats-container {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .stat-item {
+        text-align: left;
+        margin: 1rem 0;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .stat-label {
+        color: #94a3b8;
+        font-size: 0.875rem;
+      }
+
+      .stat-value {
+        color: #ffffff;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .highlight {
+        color: #60a5fa;
+      }
+
+      .footer {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        color: #94a3b8;
+        margin-top: 2rem;
+      }
+
+      .social-icons {
+        margin: 2rem 0;
+      }
+
+      .social-icons img {
+        margin: 0 10px;
+        opacity: 0.9;
+      }
+
+      .attachment-note {
+        font-style: italic;
+        color: #94a3b8;
+        font-size: 0.875rem;
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin: 1.25rem 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Logo -->
+      <div class="header-logo">
+        <img
+          src="https://assets.ecorpa.com/assets/images/logo/logo-light.png"
+          alt="Company Logo"
+          style="width: 250px; height: auto;"
+        />
+      </div>
+
+      <!-- Greeting -->
+      <p class="greeting">Reporte de Ventas<br/><span class="highlight">Resumen Ejecutivo</span></p>
+
+      <!-- Main Content -->
+      <p class="main-text">
+        A continuación se presenta el resumen de las ventas y el análisis de los productos más vendidos.
+      </p>
+
+      <!-- Stats Container -->
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-label">Total de Productos Vendidos</div>
+          <div class="stat-value">%TOTAL_PRODUCTS%</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Top 10 Productos - Unidades Vendidas</div>
+          <div class="stat-value">%TOP_10_TOTAL%</div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">Porcentaje del Total</div>
+          <div class="stat-value highlight">%PERCENTAGE%</div>
+        </div>
+      </div>
+
+      <!-- Attachment Note -->
+      <p class="attachment-note">
+        Se adjunta archivo detallado con la información de los 10 productos más vendidos.
+      </p>
+
+      <hr />
+
+      <!-- Footer -->
+      <div class="footer">
+        <!-- Social Links -->
+        <div class="social-icons">
+          <a href="https://www.facebook.com/empresa-red-social" target="_blank">
+            <img src="https://prod-emails-assets.s3.us-west-2.amazonaws.com/public/social/facebook.png" alt="Facebook" width="24" />
+          </a>
+          <a href="https://www.instagram.com/empresa-red-social" target="_blank">
+            <img src="https://prod-emails-assets.s3.us-west-2.amazonaws.com/public/social/instagram.png" alt="Instagram" width="24" />
+          </a>
+          <a href="https://www.linkedin.com/company/empresa-red-social" target="_blank">
+            <img src="https://prod-emails-assets.s3.us-west-2.amazonaws.com/public/social/linkedin.png" alt="LinkedIn" width="24" />
+          </a>
+          <a href="https://twitter.com/empresa-red-social" target="_blank">
+            <img src="https://prod-emails-assets.s3.us-west-2.amazonaws.com/public/social/x.png" alt="Twitter" width="24" />
+          </a>
+        </div>
+
+        <p>
+          Este es un correo automático generado por el sistema de reportes.<br/>
+          Por favor no responda a este mensaje.
+        </p>
+        <p>
+          © 2024 PRUEBA. Todos los derechos reservados.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
