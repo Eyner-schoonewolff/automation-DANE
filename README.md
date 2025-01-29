@@ -78,9 +78,11 @@ pip install -r requirements.txt
 - **Ejemplo de uso**:  
 
 ```bash
-curl -X 'POST' 'http://localhost:8000/automation' \
-     -H 'Content-Type: application/json' \
-     -d '{"email": "usuario@example.com"}'
+curl -X 'POST' \
+  'http://localhost:8000/automation?email=enewolff2014%40gmail.com' \
+  -H 'accept: application/json' \
+  -H 'api_key_header: contrasenia' \
+  -d ''
 ```
 
 ---
@@ -136,12 +138,23 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload --log-level debug
 ✅ **Funcionamiento completo**: El flujo debe ejecutarse correctamente.  
 ✅ **Calidad del código**: Implementación con buenas prácticas y uso correcto de OOP.  
 ✅ **Estructura del proyecto**: Código organizado y documentado.  
-✅ **Automatización**: Desde la descarga hasta el envío del correo.  
-✅ **Pruebas unitarias**: Cobertura adecuada de las funcionalidades clave.  
+✅ **Evidencia funcional**: Video funcional de la api.  
+❌ **Pruebas unitarias**: Cobertura adecuada de las funcionalidades clave. 
 
 ---
 
 # 📌 Notas Finales  
-# Muchas Gracias.  
-# Att: Eyner Alfonso Schoonewolff. 🚀
+- Muchas Gracias. Att: Eyner Alfonso Schoonewolff. 🚀
+
+# Imagen evidencia
+
+- response
+  <img width="1440" alt="imagen" src="https://github.com/user-attachments/assets/d8a74592-8c34-43b7-a13f-72deca2aeb24" />
+
+
+- captura de email body
+![imagen](https://github.com/user-attachments/assets/a792991d-b546-4339-8e79-2ef319d9ceb0)
+
+- video link [https://youtu.be/w9vtJpdJzNY]
+
 
