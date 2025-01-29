@@ -60,9 +60,17 @@ class DANEAdapter(LocalizationWebProcess):
         if response.status_code != 200:
             raise Exception(f"Error al descargar archivo: {response.status_code}")
 
-        file_path = os.path.join(os.getcwd(), "downloads/anexo_referencias_mas_vendidas.xlsx")
+        # Obtener la ruta de la carpeta de descargas
+        download_folder = os.path.join(os.getcwd(), "downloads")
+
+        # Crear la carpeta si no existe
+        os.makedirs(download_folder, exist_ok=True)
+
+        file_path = os.path.join(download_folder, "anexo_referencias_mas_vendidas.xlsx")
+
         with open(file_path, "wb") as file:
             file.write(response.content)
+
         return file_path
 
     def generate_screenshot(self, driver, file_path: str) -> None:
