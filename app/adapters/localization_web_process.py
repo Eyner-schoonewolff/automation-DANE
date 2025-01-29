@@ -7,14 +7,18 @@ import time
 import os
 
 class LocalizationWebProcess(abc.ABC):
+    """
+    Clase base para procesos de localización web.
+    """
+
     @abc.abstractmethod
-    def open_url(self, url: str) -> str:
+    def open_url(self, url: str):
         raise NotImplementedError
 
     @abc.abstractmethod
     def locate_section(self, driver) -> None:
         raise NotImplementedError
-    
+
     @abc.abstractmethod
     def download_file(self, driver) -> str:
         raise NotImplementedError
@@ -25,51 +29,41 @@ class LocalizationWebProcess(abc.ABC):
 
 
 class DANEAdapter(LocalizationWebProcess):
-    
-    def __init__(self):
-        # Configurar las opciones para Chrome
-        self.options = Options()
-        self.options.headless = True  
+    """
+    Implementación de la clase LocalizationWebProcess.
+    """
 
-    def open_url(self, url: str) -> str:
-        driver = webdriver.Chrome(options=self.options)  
+    def __init__(self):
+        self.options = Options()
+        self.options.add_argument("--headless")
+        self.options.add_argument("--no-sandbox")
+
+    def open_url(self, url: str):
+        driver = webdriver.Chrome(options=self.options)
         driver.get(url)
         return driver
 
     def locate_section(self, driver) -> None:
-        time.sleep(5)  # Esperar a que la página cargue completamente
-        section = driver.find_element(By.XPATH, "//h2[contains(text(), 'Precios de los productos de primera necesidad para los colombianos en tiempos del COVID-19')]")
+        time.sleep(5)
+        section = driver.find_element(
+            By.XPATH,
+            "//h2[contains(text(), 'Precios de los productos de primera necesidad')]",
+        )
         driver.execute_script("arguments[0].scrollIntoView();", section)
 
     def download_file(self, driver) -> str:
-        # Localiza el enlace al archivo basado en su clase
-        link = driver.find_element(By.CSS_SELECTOR, "a.btn.btn-gray[title='Anexo referencias mas vendidas']")
-        file_url = link.get_attribute('href')  # Obtiene el atributo href del enlace
-
-        # Validar si la URL ya incluye el esquema completo
-        if not file_url.startswith("http"):
-            file_url = f"https://www.dane.gov.co{file_url}" 
-
-        # Descarga el archivo usando requests
+        link = driver.find_element(
+            By.CSS_SELECTOR, "a.btn.btn-gray[title='Anexo referencias mas vendidas']"
+        )
+        file_url = link.get_attribute("href")
         response = requests.get(file_url)
-
-        # Manejo de errores en la descarga
         if response.status_code != 200:
-            raise Exception(f"Error al descargar el archivo: {response.status_code}")
+            raise Exception(f"Error al descargar archivo: {response.status_code}")
 
-        # Guarda el archivo descargado
-        file_path = os.path.join(os.getcwd(), 'anexo_referencias_mas_vendidas.xlsx')
-        with open(file_path, 'wb') as file:
+        file_path = os.path.join(os.getcwd(), "downloads/anexo_referencias_mas_vendidas.xlsx")
+        with open(file_path, "wb") as file:
             file.write(response.content)
-            
-        return "anexo_referencias_mas_vendidas.xlsx"
-
+        return file_path
 
     def generate_screenshot(self, driver, file_path: str) -> None:
-        
-        if not file_path.endswith(".png"):
-            file_path += ".png"
-        
-        driver.save_screenshot(file_path)
-
-
+        driver.save_screenshot(file_path if file_path.endswith(".png") else f"{file_path}.png")
