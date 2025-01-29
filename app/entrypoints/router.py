@@ -1,3 +1,4 @@
+from fastapi.params import Param
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services import handler
 from fastapi.responses import JSONResponse
@@ -17,19 +18,42 @@ automation = APIRouter()
 )
 def processing_analysis(
     api_key: str = Depends(validate_api_key),
-    __service: handler.ServiceAutomatication = Depends(get_service),
+    __service: handler.ServiceAutomation = Depends(get_service),
 ):
     try:
         file_path = __service.process_generate_excel(
             url=os.getenv("URL_PAGE_DANE"),
         )
 
-        print(f"File path: {file_path}")
-        __service.process_excel(file_path)
+        report_excel = __service.process_excel(file_path)
 
         return JSONResponse(
             status_code=status.HTTP_200_OK,
-            content={"message": "Archivo generado con éxito"},
+            content={"message": "ok", "data": report_excel},
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": str(e)},
+        )
+    except HTTPException as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"message": str(e)},
+        )
+
+
+@automation.post("/send_email")
+def send_email(
+    email: str = Param(..., description="Email to send the report"),
+    api_key: str = Depends(validate_api_key),
+    __service: handler.ServiceAutomation = Depends(get_service),
+):
+    try:
+        __service.send_email(email)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={"message": "ok"},
         )
     except Exception as e:
         return JSONResponse(

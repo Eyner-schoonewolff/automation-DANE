@@ -3,7 +3,7 @@ from fastapi.security import APIKeyHeader
 from dotenv import load_dotenv
 import os
 
-from app.adapters import localization_web_process, process_file
+from app.adapters import localization_web_process, process_file, calculate_file, email
 from app.services import handler
 
 load_dotenv()
@@ -27,11 +27,19 @@ def validate_api_key(api_key: str = Security(api_key_header)):
 
 
 def get_repo():
-    return localization_web_process.DANEAdapter(), process_file.AdapterExcel()
+    return (
+        localization_web_process.DANEAdapter(),
+        process_file.ExcelAdapter(),
+        calculate_file.ExcelCalculationAdapter(),
+        email.SendAdapter(),
+    )
 
-def get_service(
-    repo: tuple = Depends(get_repo)
-):
-    repo_instance, processor_instance = repo
-    return handler.ServiceAutomatication(repo=repo_instance, processor=processor_instance)
 
+def get_service(repo: tuple = Depends(get_repo)):
+    repo_instance, processor_instance, calculation, email = repo
+    return handler.ServiceAutomation(
+        scraping=repo_instance,
+        processor=processor_instance,
+        calculation=calculation,
+        email=email,
+    )
